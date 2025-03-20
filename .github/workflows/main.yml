@@ -25,7 +25,7 @@ jobs:
         run: python bikeshare_model/train_pipeline.py  
 
       - name: List Files (Debugging Step)
-        run: ls -l trained_models/  
+        run: ls -R  
 
       - name: Predict Model
         run: python bikeshare_model/predict.py
