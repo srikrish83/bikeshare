@@ -1,0 +1,102 @@
+name: CI/CD for Bikeshare Model API
+
+on:
+  push:
+    branches:
+      - main  # Triggers on push to the main branch
+
+jobs:
+  train-predict-model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/requirements.txt
+
+      - name: Train Model
+        run: python bikeshare_model/train_pipeline.py  
+
+      - name: Predict Model
+        run: python bikeshare_model/predict.py
+
+  test-model:
+    needs: train-predict-model  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements/test_requirements.txt
+
+      - name: Run Tests
+        run: pytest tests/
+
+  build-package:
+    needs: test-model  # Runs after testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install build
+
+      - name: Build Python Package
+        run: python -m build
+        # Upload the package as an artifact
+      - name: Upload Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-package
+          path: dist/
+
+  dockerize-api:
+    needs: build-package  # Runs after package build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/bikeshare_model_api:latest .
+
+      - name: Upload Docker Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: .
+
+  push-docker-image:
+    needs: dockerize-api  # Runs after Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKER_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Pull Image from Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/bikeshare_model_api:latest
