@@ -28,7 +28,7 @@ jobs:
         run: python bikeshare_model/predict.py
 
       - name: Save Model Artifacts
-        run: mkdir -p models && cp *.pkl models/  # Adjust for your model
+        run: mkdir -p models && cp bikeshare__model_output_v0.0.1.pkl models/  # Adjust for your model
         # Upload trained model for next jobs
       - name: Upload Model
         uses: actions/upload-artifact@v4
