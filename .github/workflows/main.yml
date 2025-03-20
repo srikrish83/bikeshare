@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trained-model
-          path: bikeshare_model/trained_models
+          path: ./bikeshare_model/trained_models
 
   test-model:
     needs: train-predict-model  
@@ -52,7 +52,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: trained-model
-          path: models/
+          path: ./bikeshare_model/trained_models
 
       - name: Install dependencies
         run: pip install -r requirements/test_requirements.txt
