@@ -128,5 +128,14 @@ jobs:
           name: docker-image
           path: ./
 
+      - name: List Downloaded Files (Debugging Step)
+        run: ls -lh
+
+      - name: Load Docker Image
+        run: docker load < bikeshare_model_api.tar
+
+      - name: Verify Docker Image Exists
+        run: docker images
+
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/bikeshare_model_api:latest
