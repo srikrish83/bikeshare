@@ -73,11 +73,14 @@ jobs:
       - name: Build Python Package
         run: python -m build
         # Upload the package as an artifact
+      - name: List Repository Files (Debugging Step)
+        run: ls -lR
+        
       - name: Upload Package
         uses: actions/upload-artifact@v4
         with:
           name: built-package
-          path: ./bike_sharing_api
+          path: ./dist/
 
   dockerize-api:
     needs: build-package  # Runs after package build
