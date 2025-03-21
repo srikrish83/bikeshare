@@ -5,8 +5,8 @@ FROM python:3.12-slim
 WORKDIR /workspaces/bikeshare/bike_sharing_api/app
 
 # Copy and install dependencies
-COPY requirements.txt .
-COPY bikeshare_model-0.0.1-py3-none-any.whl .
+COPY ./bike_sharing_api/requirements.txt .
+COPY ./bike_sharing_api/bikeshare_model-0.0.1-py3-none-any.whl .
 RUN pip install -r requirements.txt
 
 # Copy the entire application
