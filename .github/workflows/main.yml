@@ -108,8 +108,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
-          path: .
-
+          path: ./
+          
+      - name: List Files (Debugging Step)
+        run: ls -R  
   push-docker-image:
     needs: dockerize-api  # Runs after Docker build
     runs-on: ubuntu-latest
@@ -124,6 +126,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: docker-image
+          path: ./
 
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/bikeshare_model_api:latest
