@@ -11,7 +11,7 @@ COPY ./bike_sharing_api/bikeshare_model-0.0.1-py3-none-any.whl .
 RUN pip install -r requirements.txt
 
 # Copy the entire application
-COPY ./bike_sharing_api /app
+COPY . .
 
 # Expose port if using a web app (adjust if needed)
 EXPOSE 8000
